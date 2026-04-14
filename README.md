@@ -1,67 +1,70 @@
 # secure-rbac-task-manager
 
-A full-stack RBAC task manager built with Node.js, Express, MongoDB, and React (Vite). It includes JWT authentication, role-based authorization, secure middleware defaults, API validation, Swagger docs, and Docker support.
+Production-ready full-stack RBAC Task Manager built with Express + MongoDB + React (Vite). It includes JWT authentication, role-based authorization, request validation, Swagger documentation, Docker support, and seed data for demo/submission.
 
-## Tech Stack
+## Features
 
-- Backend: Node.js, Express.js, MongoDB, Mongoose
-- Auth/Security: JWT, bcryptjs, helmet, cors, morgan, express-rate-limit
-- Validation: express-validator
-- API Docs: Swagger UI (`/api-docs`)
-- Frontend: React + Vite + React Router
+- JWT login with 1-hour token expiry
+- RBAC enforcement (`admin` can delete tasks, users cannot access others' tasks)
+- Validation with consistent error format:
+  - `{ "success": false, "errors": ["message"] }`
+- Secure defaults (`helmet`, `cors`, `morgan`, `express-rate-limit`)
+- Swagger docs with request/response examples and auth support
+- Tailwind-based responsive frontend with loading states and toast-style feedback
 
-## Project Structure
+## Folder Tree
 
 ```text
 secure-rbac-task-manager/
-  backend/
-    src/
-      config/
-      controllers/
-      middleware/
-      models/
-      routes/
-      utils/
-    server.js
-    package.json
-    .env.example
-    Dockerfile
-  frontend/
-    src/
-      components/
-      pages/
-    package.json
-  docker-compose.yml
-  secure-rbac-task-manager.postman_collection.json
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── utils/
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── Dockerfile
+│   ├── seed.js
+│   ├── server.js
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── utils/
+│   ├── .env.example
+│   ├── .gitignore
+│   ├── postcss.config.js
+│   ├── tailwind.config.js
+│   └── package.json
+├── screenshots/
+│   └── README.md
+├── docker-compose.yml
+├── secure-rbac-task-manager.postman_collection.json
+└── README.md
 ```
 
-## Setup Instructions
-
-### 1) Clone and enter project
+## Setup Commands
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/adarsh9056/secure-rbac-task-manager.git
 cd secure-rbac-task-manager
-```
 
-### 2) Install backend dependencies
-
-```bash
 cd backend
+npm install
+cp .env.example .env
+
+cd ../frontend
 npm install
 cp .env.example .env
 ```
 
-### 3) Install frontend dependencies
-
-```bash
-cd ../frontend
-npm install
-```
-
 ## Environment Variables
 
-Create `backend/.env`:
+`backend/.env`
 
 ```env
 PORT=5000
@@ -69,16 +72,27 @@ MONGO_URI=mongodb://localhost:27017/secure-rbac-task-manager
 JWT_SECRET=your_super_secure_jwt_secret
 ```
 
-## Run the Project
+`frontend/.env`
 
-### Backend
+```env
+VITE_API_BASE_URL=http://localhost:5001/api/v1
+```
+
+## Run Locally
+
+### Backend (dev)
 
 ```bash
 cd backend
 npm run dev
 ```
 
-Backend default URL: `http://localhost:5000`
+### Backend (prod mode)
+
+```bash
+cd backend
+npm start
+```
 
 ### Frontend
 
@@ -87,59 +101,58 @@ cd frontend
 npm run dev
 ```
 
-Frontend default URL: `http://localhost:5173`
+## Seed Sample Users
+
+```bash
+cd backend
+npm run seed
+```
+
+Seeded users:
+- Admin: `admin@example.com` / `Admin123`
+- User: `user@example.com` / `User123`
+
+## Local URLs
+
+- Frontend: `http://127.0.0.1:5173`
+- Backend: `http://127.0.0.1:5001` (or `http://127.0.0.1:5000` if free)
+- Swagger: `http://127.0.0.1:5001/api-docs`
 
 ## API Routes
 
 ### Auth
-
 - `POST /api/v1/auth/register`
 - `POST /api/v1/auth/login`
 
 ### Tasks
-
-- `POST /api/v1/tasks` (authenticated)
-- `GET /api/v1/tasks` (authenticated)
-- `GET /api/v1/tasks/:id` (authenticated)
-- `PUT /api/v1/tasks/:id` (authenticated)
+- `POST /api/v1/tasks`
+- `GET /api/v1/tasks`
+- `GET /api/v1/tasks/:id`
+- `PUT /api/v1/tasks/:id`
 - `DELETE /api/v1/tasks/:id` (admin only)
 
-## Swagger API Docs
+## Swagger / Postman Testing
 
-- URL: `http://localhost:5000/api-docs`
-
-## Postman Testing
-
-Import:
-
-- `secure-rbac-task-manager.postman_collection.json`
-
-Then:
-
-1. Run **Auth - Register**
-2. Run **Auth - Login**
-3. Copy token into `token` variable
-4. Test task CRUD requests
+- Swagger: open `/api-docs`, click **Authorize**, use `Bearer <token>`
+- Postman: import `secure-rbac-task-manager.postman_collection.json`
 
 ## Docker
 
-Run backend + MongoDB with Docker Compose:
-
 ```bash
-cp backend/.env.example backend/.env
 docker compose up --build
 ```
 
 Services:
-
 - Backend: `http://localhost:5000`
 - MongoDB: `mongodb://localhost:27017`
 
+## Screenshots (Submission)
+
+Use `screenshots/README.md` as checklist and add PNG/JPG captures there.
+
 ## Scalability Notes
 
-This project can be scaled for production with:
-
-- **Redis** for token blacklisting, caching task queries, and rate-limit store
-- **Docker + orchestration** (Kubernetes/ECS) for portable deployments
-- **Microservices** split (Auth service, Task service, Notification service)
-- **Load balancing** with Nginx/ALB to distribute traffic across multiple instances
+- Redis for caching, distributed rate limiting, and token/session strategies
+- Docker + orchestration (Kubernetes / ECS)
+- Microservices split (auth service, task service, notifications)
+- Horizontal scaling with load balancing (Nginx / ALB)

@@ -12,6 +12,10 @@ const options = {
       {
         url: "http://localhost:5000",
         description: "Local server"
+      },
+      {
+        url: "http://localhost:5001",
+        description: "Alternate local server"
       }
     ],
     components: {
@@ -65,17 +69,17 @@ const options = {
           type: "object",
           properties: {
             success: { type: "boolean", example: false },
-            message: { type: "string", example: "Validation failed" },
             errors: {
               type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  field: { type: "string", example: "email" },
-                  message: { type: "string", example: "Invalid email format" }
-                }
-              }
+              items: { type: "string", example: "Invalid email format" }
             }
+          }
+        },
+        MessageErrorResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: false },
+            message: { type: "string", example: "Unauthorized" }
           }
         }
       }

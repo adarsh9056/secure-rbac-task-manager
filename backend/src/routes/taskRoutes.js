@@ -29,9 +29,25 @@ router.use(authMiddleware);
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/TaskInput'
+ *           example:
+ *             title: Finish assignment
+ *             description: Complete before Monday
+ *             completed: false
  *     responses:
  *       201:
  *         description: Task created
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageErrorResponse'
  *   get:
  *     summary: Get tasks (users get own tasks, admin gets all)
  *     tags: [Tasks]
@@ -40,6 +56,12 @@ router.use(authMiddleware);
  *     responses:
  *       200:
  *         description: List of tasks
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageErrorResponse'
  */
 router
   .route("/")
@@ -67,6 +89,12 @@ router
  *     responses:
  *       200:
  *         description: Task details
+ *       400:
+ *         description: Invalid task id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Task not found
  *   put:
@@ -89,6 +117,14 @@ router
  *     responses:
  *       200:
  *         description: Task updated
+ *       400:
+ *         description: Invalid input or task id
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Task not found
  *   delete:
  *     summary: Delete task by id (admin only)
  *     tags: [Tasks]
@@ -103,8 +139,14 @@ router
  *     responses:
  *       200:
  *         description: Task deleted
+ *       400:
+ *         description: Invalid task id
+ *       401:
+ *         description: Unauthorized
  *       403:
  *         description: Forbidden
+ *       404:
+ *         description: Task not found
  */
 router
   .route("/:id")

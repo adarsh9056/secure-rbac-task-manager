@@ -1,9 +1,17 @@
+import { clearSession } from "./utils/auth";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api/v1";
 
 const parseResponse = async (response) => {
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401) {
+    clearSession();
+  }
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
+    const message = Array.isArray(data.errors)
+      ? data.errors.join(", ")
+      : data.message || "Something went wrong";
+    throw new Error(message);
   }
   return data;
 };
